@@ -15,6 +15,7 @@ public class DailyReportService {
     private static AtomicLong soldCars = new AtomicLong(0);
 
     private SessionFactory sessionFactory;
+    private DailyReportDao dailyReportDao;
 
     private DailyReportService(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
@@ -28,14 +29,14 @@ public class DailyReportService {
     }
 
     public List<DailyReport> getAllDailyReports() {
-        return new DailyReportDao(sessionFactory.openSession()).getAllDailyReport();
+        return dailyReportDao.setSession(sessionFactory.openSession()).getAllDailyReport();
     }
     public DailyReport getLastReport() {
-        return new DailyReportDao(sessionFactory.openSession()).getLastDailyReport();
+        return dailyReportDao.setSession(sessionFactory.openSession()).getLastDailyReport();
     }
 
     public void addCurrentReport() {
-        new DailyReportDao(sessionFactory.openSession()).addDailyReport(earning.get(), soldCars.get());
+        dailyReportDao.setSession(sessionFactory.openSession()).addDailyReport(earning.get(), soldCars.get());
     }
 
     public Long addEarning(Long delta) {
@@ -52,6 +53,6 @@ public class DailyReportService {
     }
 
     public void deleteAll() {
-        new DailyReportDao(sessionFactory.openSession()).deleteAll();
+        dailyReportDao.setSession(sessionFactory.openSession()).deleteAll();
     }
 }

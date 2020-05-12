@@ -10,10 +10,6 @@ public class DailyReportDao {
 
     private Session session;
 
-    public DailyReportDao(Session session) {
-        this.session = session;
-    }
-
     public List<DailyReport> getAllDailyReport() {
         List<DailyReport> dailyReports = session.createQuery("FROM DailyReport").list();
         session.close();
@@ -43,5 +39,10 @@ public class DailyReportDao {
         query = session.createQuery("DELETE FROM Car");
         query.executeUpdate();
         session.close();
+    }
+
+    public DailyReportDao setSession(Session session) {
+        this.session = session;
+        return this;
     }
 }

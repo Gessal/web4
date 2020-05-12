@@ -10,10 +10,6 @@ public class CarDao {
 
     private Session session;
 
-    public CarDao(Session session) {
-        this.session = session;
-    }
-
     public List<Car> getAllCars() {
         List<Car> cars = session.createQuery("FROM Car").list();
         session.close();
@@ -56,5 +52,10 @@ public class CarDao {
         List<Car> cars = query.list();
         session.close();
         return cars;
+    }
+
+    public CarDao setSession(Session session) {
+        this.session = session;
+        return this;
     }
 }

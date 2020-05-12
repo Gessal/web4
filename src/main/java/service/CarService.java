@@ -14,9 +14,11 @@ public class CarService {
     private static CarService carService;
 
     private SessionFactory sessionFactory;
+    private CarDao carDao;
 
     private CarService(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
+        this.carDao = new CarDao();
     }
 
     public static CarService getInstance() {
@@ -27,13 +29,13 @@ public class CarService {
     }
 
     public List<Car> getAllCars() {
-        return new CarDao(sessionFactory.openSession()).getAllCars();
+        return carDao.setSession(sessionFactory.openSession()).getAllCars();
     }
 
     public Car buyCar(String brand, String model, String licensePlate) {
-        Car car = new CarDao(sessionFactory.openSession()).getCar(brand, model, licensePlate);
+        Car car = carDao.setSession(sessionFactory.openSession()).getCar(brand, model, licensePlate);
         if (car != null) {
-            new CarDao(sessionFactory.openSession()).removeCar(car.getId());
+            carDao.setSession(sessionFactory.openSession()).removeCar(car.getId());
             DailyReportService.getInstance().addEarning(car.getPrice());
             DailyReportService.getInstance().incrementSoldCars();
         }
@@ -41,8 +43,8 @@ public class CarService {
     }
 
     public boolean addCar(String brand, String model, String licensePlate, Long price) {
-        if (new CarDao(sessionFactory.openSession()).getCars(brand).size() < 10) {
-            new CarDao(sessionFactory.openSession()).addCar(brand, model, licensePlate, price);
+        if (carDao.setSession(sessionFactory.openSession()).getCars(brand).size() < 10) {
+            carDao.setSession(sessionFactory.openSession()).addCar(brand, model, licensePlate, price);
             return true;
         }
         return false;
