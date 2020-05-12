@@ -3,18 +3,20 @@ package DAO;
 import model.DailyReport;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import java.util.List;
 
 public class DailyReportDao {
 
-    private Session session;
+    private SessionFactory sessionFactory;
 
-    public DailyReportDao(Session session) {
-        this.session = session;
+    public DailyReportDao(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     public List<DailyReport> getAllDailyReport() {
+        Session session = sessionFactory.openSession();
         List<DailyReport> dailyReports = session.createQuery("FROM DailyReport").list();
         session.close();
         return dailyReports;
@@ -25,11 +27,13 @@ public class DailyReportDao {
         dailyReport.setEarnings(earnings);
         dailyReport.setSoldCars(soldCars);
 
+        Session session = sessionFactory.openSession();
         session.save(dailyReport);
         session.close();
     }
 
     public DailyReport getLastDailyReport() {
+        Session session = sessionFactory.openSession();
         Query query = session.createQuery("FROM DailyReport dr ORDER BY dr.id DESC");
         query.setMaxResults(1);
         DailyReport report = (DailyReport) query.uniqueResult();
@@ -38,6 +42,7 @@ public class DailyReportDao {
     }
 
     public void deleteAll() {
+        Session session = sessionFactory.openSession();
         Query query = session.createQuery("DELETE FROM DailyReport");
         query.executeUpdate();
         query = session.createQuery("DELETE FROM Car");

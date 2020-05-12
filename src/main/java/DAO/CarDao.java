@@ -3,24 +3,27 @@ package DAO;
 import model.Car;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import java.util.List;
 
 public class CarDao {
 
-    private Session session;
+    private SessionFactory sessionFactory;
 
-    public CarDao(Session session) {
-        this.session = session;
+    public CarDao(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     public List<Car> getAllCars() {
-        List<Car> cars = session.createQuery("FROM Car").list();
+        Session session = sessionFactory.openSession();
+        List<Car> cars =  session.createQuery("FROM Car").list();
         session.close();
         return cars;
     }
 
     public Car getCar(String brand, String model, String licensePlate) {
+        Session session = sessionFactory.openSession();
         Query query = session.createQuery("FROM Car WHERE brand = :brand AND model = :model AND licensePlate = :licensePlate");
         query.setParameter("brand", brand);
         query.setParameter("model", model);
@@ -32,6 +35,7 @@ public class CarDao {
     }
 
     public int removeCar(Long id) {
+        Session session = sessionFactory.openSession();
         Query query = session.createQuery("DELETE Car WHERE id = :id");
         query.setParameter("id", id);
         int n = query.executeUpdate();
@@ -46,11 +50,13 @@ public class CarDao {
         car.setLicensePlate(licensePlate);
         car.setPrice(price);
 
+        Session session = sessionFactory.openSession();
         session.save(car);
         session.close();
     }
 
     public List<Car> getCars(String brand) {
+        Session session = sessionFactory.openSession();
         Query query = session.createQuery("FROM Car WHERE brand = :brand");
         query.setParameter("brand", brand);
         List<Car> cars = query.list();
